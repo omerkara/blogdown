@@ -84,6 +84,12 @@ serve_it = function(pdir = publish_dir(), baseurl = site_base_dir()) {
   function(...) {
     okay = FALSE  # whether the server is successfully started
     root = site_root(config)
+
+    # if we are currently trying to serve this dir, don't try again
+    if (identical(root, root0 <- opts$get('serving_dir'))) return()
+    opts$set(serving_dir = root)
+    on.exit(opts$set(serving_dir = root0), add = TRUE)
+
     if (root %in% opts$get('served_dirs')) {
       if (preview_mode()) return()
       servr::browse_last()
